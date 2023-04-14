@@ -8,27 +8,33 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import java.util.*
 
+private const val PRICE_PER_CUPCAKE = 2.00
+
+@RequiresApi(Build.VERSION_CODES.N)
 class OrderViewModel : ViewModel() {
 
-    private val _quantity = MutableLiveData<Int>(0)
+    init {
+        resetOrder()
+    }
+
+    private val _quantity = MutableLiveData<Int>()
     val quantity: LiveData<Int> = _quantity
 
-    private val _flavor = MutableLiveData<String>("")
+    private val _flavor = MutableLiveData<String>()
     val flavor: LiveData<String> = _flavor
 
-    private val _date = MutableLiveData<String>("")
+    private val _date = MutableLiveData<String>()
     val date: LiveData<String> = _date
 
-    private val _price = MutableLiveData<Double>(0.0)
+    private val _price = MutableLiveData<Double>()
     val price: LiveData<Double> = _price
 
     @RequiresApi(Build.VERSION_CODES.N)
-    val formatter = SimpleDateFormat("E MMM d", Locale.getDefault())
-
-    val calendar = Calendar.getInstance()
+    val dateOptions = getPickupOptions()
 
     fun setQuantity(numberCupcakes: Int) {
         _quantity.value = numberCupcakes
+        updatePrice()
     }
 
     fun setFlavor(desiredFlavor: String) {
@@ -56,6 +62,16 @@ class OrderViewModel : ViewModel() {
         return options
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun resetOrder() {
+        _quantity.value = 0
+        _flavor.value = ""
+        _date.value = dateOptions[0]
+        _price.value = 0.0
+    }
 
+    private fun updatePrice() {
+        _price.value = (quantity.value ?: 0) * PRICE_PER_CUPCAKE
+    }
 
 }
